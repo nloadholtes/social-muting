@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 350px;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .header h1 {
+      font-size: 18px;
+      color: #333;
+      margin: 0;
+    }
+    
+    .input-section {
+      margin-bottom: 20px;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    
+    #keywordInput {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    
+    #addKeyword {
+      padding: 8px 16px;
+      background: #0073b1;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    
+    #addKeyword:hover {
+      background: #005885;
+    }
+    
+    .keywords-section {
+      margin-top: 20px;
+    }
+    
+    .keywords-section h3 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #666;
+    }
+    
+    .keyword-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+    }
+    
+    .keyword-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      border-bottom: 1px solid #eee;
+    }
+    
+    .keyword-item:last-child {
+      border-bottom: none;
+    }
+    
+    .keyword-text {
+      font-size: 14px;
+      color: #333;
+    }
+    
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    
+    .remove-btn:hover {
+      background: #c82333;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .stats {
+      margin-top: 15px;
+      padding: 10px;
+      background: #e9ecef;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🔇 Keyword Muter</h1>
+  </div>
+  
+  <div class="input-section">
+    <div class="input-group">
+      <input type="text" id="keywordInput" placeholder="Enter keyword to mute..." />
+      <button id="addKeyword">Add</button>
+    </div>
+  </div>
+  
+  <div class="keywords-section">
+    <h3>Muted Keywords</h3>
+    <div class="keyword-list" id="keywordList">
+      <div class="empty-state">No keywords muted yet</div>
+    </div>
+  </div>
+  
+  <div class="stats" id="stats">
+    Extension active on LinkedIn and Facebook
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

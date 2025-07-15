@@ -1,0 +1,92 @@
+/* Styles for the muted post indicator */
+.keyword-muted-indicator {
+  margin: 8px 0;
+  padding: 0;
+  background: transparent;
+}
+
+.muted-post-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 14px;
+  color: #6c757d;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.muted-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.muted-text {
+  flex: 1;
+  font-weight: 500;
+}
+
+.show-muted-post {
+  background: #0073b1;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.show-muted-post:hover {
+  background: #005885;
+}
+
+.show-muted-post:active {
+  background: #004a75;
+}
+
+/* Facebook-specific adjustments */
+.keyword-muted-indicator[data-platform="facebook"] .muted-post-notice {
+  background: #f0f2f5;
+  border-color: #dadde1;
+}
+
+.keyword-muted-indicator[data-platform="facebook"] .show-muted-post {
+  background: #1877f2;
+}
+
+.keyword-muted-indicator[data-platform="facebook"] .show-muted-post:hover {
+  background: #166fe5;
+}
+
+/* LinkedIn-specific adjustments */
+.keyword-muted-indicator[data-platform="linkedin"] .muted-post-notice {
+  background: #f3f6f8;
+  border-color: #d0d7de;
+}
+
+.keyword-muted-indicator[data-platform="linkedin"] .show-muted-post {
+  background: #0a66c2;
+}
+
+.keyword-muted-indicator[data-platform="linkedin"] .show-muted-post:hover {
+  background: #004182;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .muted-post-notice {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .show-muted-post {
+    align-self: flex-end;
+  }
+}
