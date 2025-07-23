@@ -11,6 +11,8 @@ I can take the power back and block the offending posts myself.
 
 This was one-shotted by Claude. There might be bugs, buyer beware.
 
+https://github.com/nloadholtes/social-muting
+
 Questions, suggestions? ☝️Open and issue or a pull request.
 
 ✌️
