@@ -102,7 +102,12 @@ class LinkedInMuter {
       '.feed-shared-article__title',
       '.feed-shared-article__description',
       '.feed-shared-external-video__title',
-      '.feed-shared-external-video__subtitle'
+      '.feed-shared-external-video__subtitle',
+      '.update-components-header__text-view',
+      '.update-components-header__text-wrapper',
+      '.update-components-actor__title',
+      '.update-components-actor__description',
+      '.update-components-actor__sub-description'
     ].join(','));
 
     let allText = '';
