@@ -62,6 +62,10 @@ class LinkedInMuter {
   findPosts(container) {
     // LinkedIn post selectors - these may need updates as LinkedIn changes
     const selectors = [
+      // New LinkedIn structure (2024+) - uses componentkey and data-view-name
+      '[componentkey]:has([data-view-name="feed-commentary"])',
+      '[componentkey]:has(h2 span.bc8ea8e7)',
+      // Legacy selectors for backwards compatibility
       '[data-id*="urn:li:activity"]',
       '.feed-shared-update-v2',
       '.occludable-update',
@@ -69,15 +73,58 @@ class LinkedInMuter {
       '[data-urn*="urn:li:activity"]'
     ];
 
-    let posts = [];
+    let posts = new Set();
+
+    // First, try finding posts with the new structure using :has()
     selectors.forEach(selector => {
-      const found = container.querySelectorAll ? 
-        container.querySelectorAll(selector) : 
-        container.matches && container.matches(selector) ? [container] : [];
-      posts = posts.concat(Array.from(found));
+      try {
+        const found = container.querySelectorAll ?
+          container.querySelectorAll(selector) :
+          container.matches && container.matches(selector) ? [container] : [];
+        Array.from(found).forEach(el => posts.add(el));
+      } catch (e) {
+        // :has() may not be supported in older browsers, skip those selectors
+      }
     });
 
-    return posts;
+    // Fallback: find commentary elements and traverse up to find post containers
+    if (posts.size === 0) {
+      const commentaries = container.querySelectorAll ?
+        container.querySelectorAll('[data-view-name="feed-commentary"]') : [];
+
+      commentaries.forEach(commentary => {
+        const postContainer = this.findPostContainer(commentary);
+        if (postContainer) {
+          posts.add(postContainer);
+        }
+      });
+    }
+
+    return Array.from(posts);
+  }
+
+  findPostContainer(element) {
+    // Traverse up to find the post container
+    let current = element;
+    while (current && current !== document.body) {
+      // Check if this looks like a post container
+      if (current.hasAttribute && current.hasAttribute('componentkey')) {
+        // Check if it contains an h2 (typically "Feed post" header)
+        const h2 = current.querySelector('h2');
+        if (h2) {
+          return current;
+        }
+      }
+      // Also check for legacy post markers
+      if (current.classList && (
+        current.classList.contains('feed-shared-update-v2') ||
+        current.classList.contains('occludable-update')
+      )) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+    return null;
   }
 
   processPost(post) {
@@ -93,7 +140,16 @@ class LinkedInMuter {
 
   extractTextContent(post) {
     // Extract text from various LinkedIn post elements
-    const textElements = post.querySelectorAll([
+    // New LinkedIn structure (2024+) - uses data-view-name attributes
+    const newSelectors = [
+      '[data-view-name="feed-commentary"]',
+      '[data-view-name="feed-actor-image"]',
+      '[data-view-name="feed-linkedin-video-description"]',
+      '[data-view-name="feed-call-to-action"]'
+    ];
+
+    // Legacy selectors for backwards compatibility
+    const legacySelectors = [
       '.feed-shared-text',
       '.feed-shared-update-v2__description',
       '.feed-shared-text__text-view',
@@ -108,12 +164,29 @@ class LinkedInMuter {
       '.update-components-actor__title',
       '.update-components-actor__description',
       '.update-components-actor__sub-description'
-    ].join(','));
+    ];
+
+    const allSelectors = [...newSelectors, ...legacySelectors];
 
     let allText = '';
+
+    // Try specific selectors first
+    const textElements = post.querySelectorAll(allSelectors.join(','));
     textElements.forEach(el => {
       allText += ' ' + el.textContent;
     });
+
+    // If we didn't find much text with selectors, fall back to getting all text
+    // from paragraph and span elements (handles obfuscated class names)
+    if (allText.trim().length < 20) {
+      const fallbackElements = post.querySelectorAll('p, span, a');
+      fallbackElements.forEach(el => {
+        // Avoid script and style content
+        if (!el.closest('script') && !el.closest('style')) {
+          allText += ' ' + el.textContent;
+        }
+      });
+    }
 
     return allText.toLowerCase();
   }

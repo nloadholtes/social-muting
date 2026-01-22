@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Social Media Keyword Muter",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Mute posts containing specific keywords on LinkedIn and Facebook",
   "permissions": [
     "storage",
