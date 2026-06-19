@@ -62,8 +62,13 @@ class LinkedInMuter {
   findPosts(container) {
     // LinkedIn post selectors - these may need updates as LinkedIn changes
     const selectors = [
-      // New LinkedIn structure (2024+) - uses componentkey and data-view-name
+      // New LinkedIn structure (2025+) - uses componentkey^="feed-commentary_"
+      '[componentkey]:has([componentkey^="feed-commentary_"])',
+      '[componentkey]:has([data-testid="expandable-text-box"])',
+      '[role="listitem"][componentkey]:has(h2)',
+      // Old LinkedIn structure (2024) - used data-view-name
       '[componentkey]:has([data-view-name="feed-commentary"])',
+      '[componentkey]:has(h2 span._9a8c9abc)',
       '[componentkey]:has(h2 span.bc8ea8e7)',
       // Legacy selectors for backwards compatibility
       '[data-id*="urn:li:activity"]',
@@ -90,7 +95,7 @@ class LinkedInMuter {
     // Fallback: find commentary elements and traverse up to find post containers
     if (posts.size === 0) {
       const commentaries = container.querySelectorAll ?
-        container.querySelectorAll('[data-view-name="feed-commentary"]') : [];
+        container.querySelectorAll('[componentkey^="feed-commentary_"], [data-view-name="feed-commentary"], [data-testid="expandable-text-box"]') : [];
 
       commentaries.forEach(commentary => {
         const postContainer = this.findPostContainer(commentary);
@@ -139,54 +144,17 @@ class LinkedInMuter {
   }
 
   extractTextContent(post) {
-    // Extract text from various LinkedIn post elements
-    // New LinkedIn structure (2024+) - uses data-view-name attributes
-    const newSelectors = [
-      '[data-view-name="feed-commentary"]',
-      '[data-view-name="feed-actor-image"]',
-      '[data-view-name="feed-linkedin-video-description"]',
-      '[data-view-name="feed-call-to-action"]'
-    ];
-
-    // Legacy selectors for backwards compatibility
-    const legacySelectors = [
-      '.feed-shared-text',
-      '.feed-shared-update-v2__description',
-      '.feed-shared-text__text-view',
-      '.feed-shared-header__title',
-      '.feed-shared-actor__name',
-      '.feed-shared-article__title',
-      '.feed-shared-article__description',
-      '.feed-shared-external-video__title',
-      '.feed-shared-external-video__subtitle',
-      '.update-components-header__text-view',
-      '.update-components-header__text-wrapper',
-      '.update-components-actor__title',
-      '.update-components-actor__description',
-      '.update-components-actor__sub-description'
-    ];
-
-    const allSelectors = [...newSelectors, ...legacySelectors];
-
     let allText = '';
 
-    // Try specific selectors first
-    const textElements = post.querySelectorAll(allSelectors.join(','));
-    textElements.forEach(el => {
-      allText += ' ' + el.textContent;
+    // Grab all text from p/span/a in the post container.
+    // LinkedIn obfuscates class names, so we can't rely on stable selectors for
+    // things like "Person X loves this" headers — a full sweep is more resilient.
+    const allElements = post.querySelectorAll('p, span, a');
+    allElements.forEach(el => {
+      if (!el.closest('script') && !el.closest('style')) {
+        allText += ' ' + el.textContent;
+      }
     });
-
-    // If we didn't find much text with selectors, fall back to getting all text
-    // from paragraph and span elements (handles obfuscated class names)
-    if (allText.trim().length < 20) {
-      const fallbackElements = post.querySelectorAll('p, span, a');
-      fallbackElements.forEach(el => {
-        // Avoid script and style content
-        if (!el.closest('script') && !el.closest('style')) {
-          allText += ' ' + el.textContent;
-        }
-      });
-    }
 
     return allText.toLowerCase();
   }
