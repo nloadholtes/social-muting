@@ -62,14 +62,9 @@ class LinkedInMuter {
   findPosts(container) {
     // LinkedIn post selectors - these may need updates as LinkedIn changes
     const selectors = [
-      // New LinkedIn structure (2025+) - uses componentkey^="feed-commentary_"
-      '[componentkey]:has([componentkey^="feed-commentary_"])',
-      '[componentkey]:has([data-testid="expandable-text-box"])',
+      // A list item is a post-sized container. Do not select every ancestor that
+      // happens to contain a commentary block; that can include the whole feed.
       '[role="listitem"][componentkey]:has(h2)',
-      // Old LinkedIn structure (2024) - used data-view-name
-      '[componentkey]:has([data-view-name="feed-commentary"])',
-      '[componentkey]:has(h2 span._9a8c9abc)',
-      '[componentkey]:has(h2 span.bc8ea8e7)',
       // Legacy selectors for backwards compatibility
       '[data-id*="urn:li:activity"]',
       '.feed-shared-update-v2',
